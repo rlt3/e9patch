@@ -98,7 +98,11 @@ static Key calculateKey(const Allocator &allocator, const size_t MAPPING_SIZE,
         if (a->ub >= END)
             return KEY_ONES;
         size_t overlap = a->ub - END;
-        overlap = (overlap + UNIT_SIZE - 1) / UNIT_SIZE;
+        // Check for overflow of size_t:
+        if ((overlap + UNIT_SIZE - 1) > overlap)
+            overlap = (UNIT_SIZE - 1) / UNIT_SIZE;
+        else
+            overlap = (overlap + UNIT_SIZE - 1) / UNIT_SIZE;
         key = ~(KEY_ONES << overlap);
         ++i;
     }
